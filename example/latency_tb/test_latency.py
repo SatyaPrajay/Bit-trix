@@ -2,6 +2,9 @@ import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge
 
+# Clock period (must match your Clock below)
+CLK_PERIOD_NS = 10
+
 # ---------------------------
 # Reset
 # ---------------------------
@@ -10,64 +13,37 @@ async def reset_dut(dut):
     for _ in range(5):
         await RisingEdge(dut.clk)
     dut.rst.value = 0
-    await RisingEdge(dut.clk)
 
 # ---------------------------
-# Run instruction with fixed latency
-# ---------------------------
-async def run_instruction(dut, instr, latency, name="UNKNOWN"):
-
-    # Issue instruction
-    dut.instr.value = instr
-    await RisingEdge(dut.clk)
-
-    # Count cycles manually
-    for _ in range(latency):
-        await RisingEdge(dut.clk)
-
-    cocotb.log.info(f"[{name}] latency = {latency} cycles")
-
-    return latency
-
-# ---------------------------
-# Main Test
+# Test: Pretty print cycle count
 # ---------------------------
 @cocotb.test()
-async def test_latency(dut):
+async def test_cycle_count(dut):
 
-    # Clock (10ns)
-    cocotb.start_soon(Clock(dut.clk, 10, units="ns").start())
+    # Start clock
+    cocotb.start_soon(Clock(dut.clk, CLK_PERIOD_NS, units="ns").start())
 
     dut.instr.value = 0
 
     await reset_dut(dut)
 
-    # ---------------------------
-    # Define instruction latencies
-    # (YOU decide these)
-    # ---------------------------
-    program = [
-        (0x01, 1, "ADD"),
-        (0x02, 1, "SUB"),
-        (0x03, 3, "MUL"),
-        (0x04, 5, "MAC"),
-        (0x05, 4, "LOAD"),
-        (0x06, 4, "STORE"),
-    ]
+    # Run simulation for some cycles
+    for _ in range(50):
+        await RisingEdge(dut.clk)
 
-    total_cycles = 0
+    # Read final cycle count
+    total_cycles = int(dut.cycle_count.value)
+
+    # Convert to time
+    total_time_ns = total_cycles * CLK_PERIOD_NS
 
     # ---------------------------
-    # Execute program
+    # Pretty Print
     # ---------------------------
-    for instr, latency, name in program:
-        cycles = await run_instruction(dut, instr, latency, name)
-        total_cycles += cycles
-
-    # ---------------------------
-    # Report
-    # ---------------------------
-    cocotb.log.info("===== Program Timing =====")
-    cocotb.log.info(f"Total cycles: {total_cycles}")
-    cocotb.log.info(f"Instructions: {len(program)}")
-    cocotb.log.info(f"Avg CPI: {total_cycles / len(program):.2f}")
+    cocotb.log.info("=" * 50)
+    cocotb.log.info("         ⏱️  SIMULATION SUMMARY")
+    cocotb.log.info("=" * 50)
+    cocotb.log.info(f"Total Cycles   : {total_cycles}")
+    cocotb.log.info(f"Clock Period   : {CLK_PERIOD_NS} ns")
+    cocotb.log.info(f"Total Time     : {total_time_ns} ns")
+    cocotb.log.info("=" * 50)
