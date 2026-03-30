@@ -7,7 +7,10 @@ module your_some_unit #(parameter WIDTH = 8) (
 );
 
     always @(posedge clk or posedge rst) begin
-      // your implementation here
+        if (rst)
+            out <= 0;
+        else
+            out <= out + (a * b);  // MAC
     end
 
 endmodule
