@@ -3,14 +3,8 @@ SIM = verilator
 
 TOPLEVEL = top
 MODULE = test_latency   # your cocotb file name (without .py)
-
-VERILOG_SOURCES = \
-    $(PWD)/../top.v \
-    $(PWD)/../instr_decoder.v \
-    $(PWD)/../opcode_gen.v \
-    $(PWD)/../mac_unit.v \
-    $(PWD)/../ram.v \
-    $(PWD)/../register.v
+#mention all the source files that are required here.
+VERILOG_SOURCES = VERILOG_SOURCES = $(wildcard $(PWD)/../src/*.v)
 
 # 👇 THIS ENABLES WAVES
 EXTRA_ARGS += --trace
