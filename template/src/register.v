@@ -22,7 +22,7 @@ module reg_file (
     end
  
     always @(*) begin
-        rs1_data <= regs[rs1_addr];
-        rs2_data <= regs[rs2_addr];
+        rs1_data = regs[rs1_addr];
+        rs2_data = regs[rs2_addr];
     end
 endmodule

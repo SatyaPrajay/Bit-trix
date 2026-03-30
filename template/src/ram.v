@@ -19,9 +19,9 @@ module ram #(
  
     always @(posedge clk) begin
         if (wr_en)
-            mem[addr] <= wr_data;  // WRITE
+           mem[addr[5:0]] <= wr_data;// WRITE
         else
-            rd_data <= mem[addr];  // READ
+            rd_data <= mem[addr[5:0]];  // READ
     end
  
 endmodule
