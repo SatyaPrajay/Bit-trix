@@ -1,0 +1,6 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1774894205" />
+    <testcase name="test_deconvolution_latency" classname="test_latency" file="/mnt/e/downloads/Bit-trix-main/template/your_testbench/test_latency.py" lineno="21" time="0.0027933120727539062" sim_time_ns="181.0" ratio_time="64797.62922499146" />
+  </testsuite>
+</testsuites>
